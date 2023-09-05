@@ -7,3 +7,6 @@ Conda is used to create an environment with python 3.10 and pip is used to insta
 conda create --name c2l python=3.10
 pip install -r requirements.txt
 ``` 
+
+## Development
+This repository uses pytorch, pytorch lightning and hydra for experiment configuration managment. autopep8 is used for formatting python files.
