@@ -13,7 +13,7 @@ repos:
             entry: pylint
             language: system
             types: [python]
-            args: [-rn, -sn, --disable=C0111]
+            args: [-rn, -sn, --disable, 'C0111, C0103']
     - repo: https://github.com/adrienverge/yamllint.git
       rev: v1.32.0
       hooks:
