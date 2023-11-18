@@ -29,7 +29,7 @@ class KittiOdometry(Dataset):
             with open(seq_path / "times.txt", 'r', encoding='utf-8') as f:
                 timestamps = f.readlines()
 
-            if seq_id <= KittiOdometry.last_seq_w_poses:
+            if seq_id < KittiOdometry.last_seq_w_poses:
                 pose_path = dataset_path / "poses" / f"{seq_id:02d}.txt"
                 poses = self._parse_poses(pose_path)
 
@@ -49,18 +49,19 @@ class KittiOdometry(Dataset):
                             'item_id': idx,
                             'cam_id': cam_id,
                             'timestamp': timestamp,
-                            'pose': poses[idx] if seq_id <= KittiOdometry.last_seq_w_poses else None
+                            'pose': poses[idx] if seq_id < KittiOdometry.last_seq_w_poses else None
                         }
                     ))
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data)  # 87104
 
     def __getitem__(self, idx):
         sample = self.data[idx]
 
-        sample.pcl = np.fromfile(sample.pcl, dtype=np.float32).reshape(-1, 4)
-        sample.img = np.array(Image.open(sample.img))
+        sample.pcl = np.fromfile(
+            sample.pcl, dtype=np.float32).reshape(-1, 4)  # (N, 4)
+        sample.img = np.array(Image.open(sample.img))  # (H, W, 3)
 
         return sample
 
@@ -126,9 +127,11 @@ class KittiOdometry(Dataset):
         with open(filepath, 'r', encoding='utf-8') as f:
             poses = f.readlines()
 
-            for pose in poses:
-                pose = np.array(
-                    [float(x) for x in pose.split()]).reshape(3, 4)
-                pose = np.vstack([pose, [0, 0, 0, 1]])
+        poses = [np.vstack([
+            np.fromstring(pose, sep=' ').reshape(3, 4),
+            [0, 0, 0, 1]
+        ])
+            for pose in poses
+        ]
 
         return poses
