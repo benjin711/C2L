@@ -2,7 +2,7 @@ from pathlib import Path
 import numpy as np
 from torch.utils.data import Dataset
 from PIL import Image
-from c2l_data_sample import C2LDataSample
+from c2l.datasets.c2l_data_sample import C2LDataSample
 
 
 class KittiOdometry(Dataset):

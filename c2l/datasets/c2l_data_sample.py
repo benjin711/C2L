@@ -6,8 +6,8 @@ import numpy as np
 
 @dataclass
 class C2LDataSample:
-    pcl: Union(Path, np.ndarray)
-    img: Union(Path, np.ndarray)
+    pcl: Union[Path, np.ndarray]
+    img: Union[Path, np.ndarray]
     K: np.ndarray
     T: np.ndarray
     metadata: dict

@@ -13,3 +13,7 @@ pip install -r requirements.txt
 ```
 pre-commit install
 ```
+In order for pylint to find project level imports, the project root directory must be added to the python path. This can be done by e.g. adding the following line to the .bashrc file:
+```
+export PYTHONPATH="${PYTHONPATH}:/path/to/project/root"
+```
