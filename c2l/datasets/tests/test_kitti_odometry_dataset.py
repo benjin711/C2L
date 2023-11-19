@@ -67,9 +67,9 @@ class TestKittiOdometryDataset(unittest.TestCase):
         self.assertIsInstance(sample.metadata['pose'], np.ndarray)
         self.assertEqual(sample.metadata['pose'].shape, (4, 4))
 
-    def test_getitem(self):
-        # Check that the __getitem__ method returns a correct sample
-        sample = self.dataset[0]
+    def test_getsample(self):
+        # Check that the get_sample method returns a correct sample
+        sample = self.dataset.get_sample(0)
         self.assertIsInstance(sample.pcl, np.ndarray)
         self.assertEqual(sample.pcl.dtype, np.float32)
         self.assertEqual(sample.pcl.shape[1], 4)

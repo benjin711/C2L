@@ -1,11 +1,11 @@
 from pathlib import Path
+from typing import Dict, List
 import numpy as np
-from torch.utils.data import Dataset
 from PIL import Image
-from c2l.datasets.c2l_data_sample import C2LDataSample
+from c2l.datasets.c2l_dataclasses import C2LDataSample
 
 
-class KittiOdometry(Dataset):
+class KittiOdometry:
 
     num_seq = 22
     last_seq_w_poses = 11
@@ -53,10 +53,10 @@ class KittiOdometry(Dataset):
                         }
                     ))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)  # 87104
 
-    def __getitem__(self, idx):
+    def get_sample(self, idx) -> C2LDataSample:
         sample = self.data[idx]
 
         sample.pcl = np.fromfile(
@@ -65,7 +65,7 @@ class KittiOdometry(Dataset):
 
         return sample
 
-    def _parse_calib(self, filepath: Path):
+    def _parse_calib(self, filepath: Path) -> Dict[str, np.ndarray]:
         data = {}
 
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -123,7 +123,7 @@ class KittiOdometry(Dataset):
 
         return data
 
-    def _parse_poses(self, filepath: Path):
+    def _parse_poses(self, filepath: Path) -> List[np.ndarray]:
         with open(filepath, 'r', encoding='utf-8') as f:
             poses = f.readlines()
 
