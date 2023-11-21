@@ -61,7 +61,7 @@ class KittiOdometry:
 
         sample.pcl = np.fromfile(
             sample.pcl, dtype=np.float32).reshape(-1, 4)  # (N, 4)
-        sample.img = np.array(Image.open(sample.img))  # (H, W, 3)
+        sample.img = np.transpose(Image.open(sample.img), (2, 0, 1))  # (H, W, 3) -> (3, H, W)
 
         return sample
 
