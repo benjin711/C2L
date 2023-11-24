@@ -10,7 +10,12 @@ class KittiOdometry:
     num_seq = 22
     last_seq_w_poses = 11
 
-    def __init__(self, dataset_path: str) -> None:
+    def __init__(self, dataset_path: str, sequences: List[int] = None) -> None:
+        """
+        Args:
+            dataset_path (str): Path to the KITTI odometry dataset
+            sequences (List[int]): List of sequences to use. If None, all sequences are used.
+        """
         super().__init__()
 
         dataset_path = Path(dataset_path)
@@ -20,6 +25,9 @@ class KittiOdometry:
         self.seq_to_calib = {}
 
         for seq_id in range(KittiOdometry.num_seq):
+            if seq_id not in sequences and sequences is not None:
+                continue
+
             seq_path = dataset_path / "sequences" / f"{seq_id:02d}"
             pcl_path = seq_path / "velodyne"
 

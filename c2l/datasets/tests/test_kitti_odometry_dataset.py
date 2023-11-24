@@ -7,15 +7,18 @@ from c2l.datasets.kitti_odometry_dataset import KittiOdometry
 class TestKittiOdometryDataset(unittest.TestCase):
 
     def setUp(self) -> None:
+        self.sequences = [0, 1, 2]
         self.dataset = KittiOdometry(
-            "/home/benjin/Data/kitti_odometry/dataset")
+            "/home/benjin/Data/kitti_odometry/dataset",
+            self.sequences
+        )
 
     def test_init(self):
         # Check that data has been loaded correctly
         self.assertEqual(set(self.dataset.seq_to_calib.keys()),
-                         set(range(KittiOdometry.num_seq)))
+                         set(self.sequences))
 
-        for seq_id in range(KittiOdometry.num_seq):
+        for seq_id in self.sequences:
             self.assertEqual(
                 set(self.dataset.seq_to_calib[seq_id].keys()),
                 set(['P_rect_00', 'P_rect_10', 'P_rect_20', 'P_rect_30',
@@ -75,7 +78,7 @@ class TestKittiOdometryDataset(unittest.TestCase):
         self.assertEqual(sample.pcl.shape[1], 4)
         self.assertIsInstance(sample.img, np.ndarray)
         self.assertEqual(sample.img.dtype, np.uint8)
-        self.assertEqual(sample.img.shape[2], 3)
+        self.assertEqual(sample.img.shape[0], 3)
         self.assertIsInstance(sample.K, np.ndarray)
         self.assertEqual(sample.K.shape, (3, 3))
         self.assertIsInstance(sample.T, np.ndarray)

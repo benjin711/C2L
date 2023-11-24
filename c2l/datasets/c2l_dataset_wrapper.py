@@ -42,13 +42,13 @@ class C2LDatasetWrapper(Dataset):
 
         # Image, pcl, K tuple augmentations and format standardization
         sample.img, pcl, sample.K = self.augmentator(
-            image=sample.img,
+            img=sample.img,
             pcl=pcl,
             K=sample.K
         )
 
         # Transform pcl from cam to prior frame
-        pcl, intensity = sample.pcl[:, :3], sample.pcl[:, 3]
+        pcl, intensity = pcl[:, :3], pcl[:, 3]
         pcl = np.hstack((pcl, np.ones((pcl.shape[0], 1))))
         T = self.transformation_sampler().numpy()
         pcl = np.dot(T, pcl.T).T[:, :3]

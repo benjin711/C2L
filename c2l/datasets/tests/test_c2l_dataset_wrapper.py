@@ -15,23 +15,26 @@ class TestC2LDatasetWrapper(unittest.TestCase):
         # Mock dataset
         self.mock_dataset = Mock()
 
-        self.T_cam_velo = np.array([
+        T_cam_velo = np.array([
             [0.0138,  0.8051, -0.5930, -0.3636],
             [-0.8044,  0.3612,  0.4716,  0.5556],
             [0.5939,  0.4705,  0.6526, -0.8707],
             [0.0000,  0.0000,  0.0000,  1.0000]
         ], dtype=np.float32)
 
-        self.mock_pcl = np.array([[0, 0, 0, 0], [1, 1, 1, 1]], dtype=np.float32)
+        mock_pcl = np.array([[0, 0, 0, 0], [1, 1, 1, 1]], dtype=np.float32)
 
         self.mock_sample = C2LDataSample(
-            pcl=self.mock_pcl,
-            img=rng.integers(0, 255, size=(2, 4, 3), dtype=np.uint8),
+            pcl=mock_pcl,
+            img=rng.integers(0, 255, size=(3, 2, 4), dtype=np.uint8),
             K=np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]], dtype=np.float32),
-            T=self.T_cam_velo,
+            T=T_cam_velo,
             metadata={'test': 'test'}
         )
         self.mock_dataset.get_sample.return_value = self.mock_sample
+
+        # Mock augmentator
+        self.mock_augmentator = Mock(side_effect=lambda img, pcl, K: (img, pcl, K))
 
         # Mock transformation sampler
         self.mock_transformation_sampler = Mock()
@@ -47,18 +50,21 @@ class TestC2LDatasetWrapper(unittest.TestCase):
 
         # Create dataset wrapper for testing
         self.dataset_wrapper = C2LDatasetWrapper(
-            self.mock_dataset, self.mock_transformation_sampler)
+            self.mock_dataset, self.mock_augmentator, self.mock_transformation_sampler)
 
     def test_getitem(self):
         sample = self.dataset_wrapper[0]
 
+        mock_pcl = self.mock_sample.pcl
+        T_cam_velo = self.mock_sample.T
+
         # Check that the intensity channel is not modified
-        self.assertTrue(np.isclose(sample.pcl[:, 3], self.mock_pcl[:, 3]).all())
+        self.assertTrue(np.isclose(sample.pcl[:, 3], mock_pcl[:, 3]).all())
 
         # Check that the pcl is transformed from velo to cam to prior frame
-        pcl = np.hstack((self.mock_pcl[:, :3], np.ones((self.mock_pcl.shape[0], 1))))
-        pcl_p = np.dot(self.T_cam_velo, pcl.T).T
-        pcl_pp = np.dot(self.mock_transformation, pcl_p.T).T
+        pcl = np.hstack((mock_pcl[:, :3], np.ones((mock_pcl.shape[0], 1))))
+        pcl_p = np.dot(T_cam_velo, pcl.T).T
+        pcl_pp = np.dot(self.mock_transformation.numpy(), pcl_p.T).T
         self.assertTrue(np.isclose(sample.pcl[:, :3], pcl_pp[:, :3]).all())
 
         # Check that the image, K, and metadata are not modified
