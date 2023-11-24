@@ -1,0 +1,31 @@
+---
+train_val:
+    _target_: c2l.utils.augmentor.Augmentor
+    custom_augmentors:
+        - _target_: c2l.utils.augmentor.CustomRandomResizedCrop
+          size: [320, 960]  # H, W
+          scale: [0.5, 1.0]
+          ratio: [2.25, 4.0]  # 3 * 3 / 4, 3 * 4 / 3
+        - _target_: c2l.utils.augmentor.CustomRandomRotation
+          degrees: 5.0
+        - _target_: c2l.utils.augmentor.CustomRandomHorizontalFlip
+          p: 0.5
+        - _target_: c2l.utils.augmentor.CustomRandomVerticalFlip
+          p: 0.5
+    color_augmentors:
+        - _target_: torchvision.transforms.v2.ColorJitter
+          brightness: 0.5
+          hue: 0.3
+        - _target_: torchvision.transforms.v2.GaussianBlur
+          kernel_size: 9
+          sigma: 5.0
+        - _target_: torchvision.transforms.v2.RandomInvert
+          p: 0.5
+
+
+test:
+    _target_: c2l.utils.augmentor.Augmentor
+    custom_augmentors:
+        - _target_: c2l.utils.augmentor.CustomRandomCrop
+          size: [320, 960]  # H, ,W
+    color_augmentors:

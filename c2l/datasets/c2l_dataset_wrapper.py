@@ -50,7 +50,7 @@ class C2LDatasetWrapper(Dataset):
         # Transform pcl from cam to prior frame
         pcl, intensity = pcl[:, :3], pcl[:, 3]
         pcl = np.hstack((pcl, np.ones((pcl.shape[0], 1))))
-        T = self.transformation_sampler().numpy()
+        T = self.transformation_sampler().squeeze().numpy()
         pcl = np.dot(T, pcl.T).T[:, :3]
         sample.pcl = np.hstack((pcl, intensity[:, None]))
 

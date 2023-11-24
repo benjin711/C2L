@@ -1,27 +1,22 @@
 ---
 repos:
-    - repo: local
-      hooks:
-          - id: autopep8
-            name: autopep8
-            entry: autopep8
-            language: system
-            types: [python]
-            args: [-i, --max-line-length, '100']
-            require_serial: true
-          - id: pylint
-            name: pylint
-            entry: pylint
-            language: system
-            types: [python]
-            args: [-rn, -sn, --disable, 'C0111, C0103, R0903']
-    - repo: https://github.com/adrienverge/yamllint.git
-      rev: v1.32.0
-      hooks:
-          - id: yamllint
-            args: [--format, parsable, --strict]
-
-    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-      rev: 0.2.3
-      hooks:
-          - id: yamlfmt
+  - repo: local
+    hooks:
+      - id: autopep8
+        name: autopep8
+        entry: autopep8
+        language: system
+        types: [python]
+        args: [-i, --max-line-length, "100"]
+        require_serial: true
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args: [-rn, -sn, --disable, "C0111, C0103, R0903"]
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args: [--format, parsable, --strict]

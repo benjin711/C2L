@@ -1,0 +1,10 @@
+---
+default:
+    _target_: c2l.utils.transformation_sampler.TransformationSampler
+    translation_sampler:
+        _target_: c2l.utils.transformation_sampler.TranslationSampler
+        low: -10.0
+        high: 10.0
+    rotation_sampler:
+        _target_: c2l.utils.transformation_sampler.RotationSampler
+        angle: 5.0

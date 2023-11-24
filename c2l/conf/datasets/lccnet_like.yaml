@@ -1,0 +1,35 @@
+---
+# A split like in Lccnet and DXQNet. In Lccnet and DXQNet the authors falsely
+# claim that the kitti odometry consits of 21 sequencs when there are
+# actually 22 (sequences 0 - 21). I just use 21 as an extra validation sequence.
+defaults:
+    - augmentors: lccnet_like
+    - transformation_samplers: lccnet_like
+    - _self_
+
+kitti_path: /home/benjin/Data/kitti_odometry/dataset
+
+train:
+    - dataset:
+          _target_: c2l.datasets.kitti_odometry_dataset.KittiOdometry
+          dataset_path: ${....kitti_path}
+          sequences:
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+      augmentor: ${...augmentors.train_val}
+      transformation_sampler: ${...transformation_samplers.default}
+
+val:
+    - dataset:
+          _target_: c2l.datasets.kitti_odometry_dataset.KittiOdometry
+          dataset_path: ${....kitti_path}
+          sequences: [19, 20, 21]
+      augmentor: ${...augmentors.train_val}
+      transformation_sampler: ${...transformation_samplers.default}
+
+test:
+    - dataset:
+          _target_: c2l.datasets.kitti_odometry_dataset.KittiOdometry
+          dataset_path: ${....kitti_path}
+          sequences: [0]
+      augmentor: ${...augmentors.test}
+      transformation_sampler: ${...transformation_samplers.default}

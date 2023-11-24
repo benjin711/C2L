@@ -1,0 +1,11 @@
+---
+# @package _global_
+defaults:
+    - override /datasets: lccnet_like
+
+# General Parameters
+general:
+    exp_name: debug
+    run_mode: train  # train, test
+    seed: 1
+    log_path: /home/benjin/debug

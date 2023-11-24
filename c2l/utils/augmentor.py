@@ -4,6 +4,9 @@ import torch
 import torchvision.transforms.functional as TF
 from torchvision.transforms import v2
 
+IMAGENET_MEAN = [0.485, 0.456, 0.406]
+IMAGENET_STD = [0.229, 0.224, 0.225]
+
 
 class CustomAugmentor(Protocol):
     """
@@ -369,7 +372,7 @@ class Augmentor:
         # ImageNet normalization
         self.normalization = v2.Compose([
             v2.ToDtype(torch.float32, scale=True),
-            v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            v2.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD, inplace=True),
         ])
 
     def __call__(

@@ -1,0 +1,17 @@
+---
+hydra:
+    run:
+        dir: >
+            ${general.log_path}/
+            ${now:%Y-%m-%d}-${now:%H-%M-%S}-${general.exp_name}
+
+defaults:
+    - datasets: ???
+    - _self_
+
+# General Parameters
+general:
+    exp_name: ???
+    run_mode: ???   # train, test
+    seed: ???
+    log_path: ???
