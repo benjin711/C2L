@@ -29,6 +29,66 @@ class CustomAugmentor(Protocol):
         ...  # pylint: disable=unnecessary-ellipsis
 
 
+class CustomRandomCrop:
+    """
+    Custom random crop. This class is a wrapper for the torchvision
+    RandomCrop class. It is used to make sure that the camera matrix
+    is updated accordingly.
+    """
+
+    def __init__(
+        self,
+        size: Union[int, Sequence[int]],
+    ) -> None:
+        """
+        Args:
+            size: the size of the crop (H, W)
+            padding: the padding on each border (L, T, R, B)
+            pad_if_needed: whether the image should be padded if it is smaller than the crop
+            fill: the value to be filled in the padded areas
+            padding_mode: the padding mode
+        """
+        self.size = size
+
+    def __call__(
+        self,
+        img: np.ndarray,
+        pcl: np.ndarray,
+        K: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Args:
+            img (3, H, W): the image to be cropped
+            pcl: the point cloud
+            K: the camera matrix of the image
+        Returns:
+            the pcl and adjusted image and camera matrix
+        """
+        K = K.copy()
+
+        img = torch.tensor(img)
+
+        # Apply the random crop
+        i, j, h, w = v2.RandomCrop.get_params(
+            img,
+            output_size=self.size
+        )
+        img = TF.crop(img, i, j, h, w)
+
+        # Adjust for the crop
+        K_p = np.array([
+            [1, 0, -j],
+            [0, 1, -i],
+            [0, 0, 1]
+        ])
+        K = np.dot(K_p, K)
+
+        # Convert the image back to numpy
+        img = np.array(img)
+
+        return img, pcl, K
+
+
 class CustomRandomResizedCrop:
     """
     Custom random resized crop. This class is a wrapper for the torchvision
@@ -302,18 +362,15 @@ class Augmentor:
             custom_augmentors: the custom_augmentors to be applied
             color_augmentors: the color augmentors to be applied
         """
-        # Make sure images are standard shape
-        assert isinstance(custom_augmentors[0], CustomRandomResizedCrop), \
-            "The first custom augmentor must be a CustomRandomResizedCrop"
 
-        # Make sure the images are ImageNet normalized
-        assert isinstance(color_augmentors[-1], v2.Normalize), \
-            "The last color augmentor must be a Normalize"
-        assert isinstance(color_augmentors[-2], v2.ToDtype), \
-            "The second to last color augmentor must be a ToDtype"
+        self.custom_augmentors = v2.Compose(custom_augmentors) if custom_augmentors else None
+        self.color_augmentors = v2.RandomChoice(color_augmentors) if color_augmentors else None
 
-        self.custom_augmentors = v2.Compose(custom_augmentors)
-        self.color_augmentors = v2.RandomChoice(color_augmentors)
+        # ImageNet normalization
+        self.normalization = v2.Compose([
+            v2.ToDtype(torch.float32, scale=True),
+            v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
 
     def __call__(
         self,
@@ -330,11 +387,16 @@ class Augmentor:
             the pcl and augmented image and camera matrix
         """
         # Apply the custom augmentors
-        img, pcl, K = self.custom_augmentors(img, pcl, K)
+        if self.custom_augmentors:
+            img, pcl, K = self.custom_augmentors(img, pcl, K)
 
         # Apply the color augmentors
         img = torch.tensor(img)
-        img = self.color_augmentors(img)
+
+        if self.color_augmentors:
+            img = self.color_augmentors(img)
+
+        img = self.normalization(img)
         img = np.array(img)
 
         return img, pcl, K

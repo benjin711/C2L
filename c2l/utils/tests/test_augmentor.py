@@ -2,11 +2,10 @@ from typing import Tuple
 import unittest
 
 import numpy as np
-import torch
 import matplotlib.pyplot as plt
 from torchvision.transforms import v2
 
-from c2l.utils.augmentor import CustomRandomHorizontalFlip, \
+from c2l.utils.augmentor import CustomRandomCrop, CustomRandomHorizontalFlip, \
     CustomRandomResizedCrop, CustomRandomRotation, CustomRandomVerticalFlip, \
     Augmentor
 
@@ -115,6 +114,48 @@ def transform_pixel(pixel: np.ndarray, K: np.ndarray) -> np.ndarray:
     pixel = pixel.astype(np.int32)
 
     return pixel
+
+
+class TestCustomRandomCrop(unittest.TestCase):
+
+    def test_call(self):
+        H_pre, W_pre = 1080, 1920
+        H_post, W_post = 320, 960
+
+        # Setup object of scrutiny
+        crc = CustomRandomCrop(
+            size=(H_post, W_post),
+        )
+
+        img, pcl, K = get_dummy_data(H_pre, W_pre, 100)
+
+        # Draw red patch at center location
+        mid_pixel = np.array([W_pre // 2, H_pre // 2, 1], np.int32)
+        img = draw_square(img, mid_pixel, 90, (255, 0, 0))
+
+        # Call the object of scrutiny
+        img_p, pcl_p, K_p = crc(img, pcl, K)
+
+        # Check the results
+        self.assertEqual(img_p.shape, (3, H_post, W_post))
+        self.assertTrue(np.isclose(pcl, pcl_p).all())
+
+        # Manually inspect images to test that the image is indeed getting cropped and resized
+        # Additionally, check that the camera matrix is being adjusted correctly. This can be
+        # done by checking that "K_p @ np.linalg.inv(K) @ mid_pixel" overlaps with the transformed
+        # right square.
+        DEBUG = False
+        if DEBUG:
+            # Transform mid_pixel to the post-crop image using the adjusted camera matrix
+            mid_pixel = mid_pixel.astype(np.float32)
+            mid_pixel = transform_pixel(mid_pixel, K_p @ np.linalg.inv(K))
+
+            # Draw blue square around the transformed mid_pixel
+            img_p_copy = img_p.copy()
+            img_p_copy = draw_square(img_p_copy, mid_pixel, 30, (0, 0, 255))
+
+            # Save the images for visual inspection
+            save_images(img, img_p, img_p_copy, 'test_custom_random_crop.png')
 
 
 class TestCustomRandomResizedCrop(unittest.TestCase):
@@ -319,11 +360,6 @@ class TestAugmentor(unittest.TestCase):
                 contrast=0.5,
                 saturation=0.5,
                 hue=0.5
-            ),
-            v2.ToDtype(dtype=torch.float32, scale=True),
-            v2.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
             ),
         ]
         self.aug = Augmentor(
