@@ -28,11 +28,11 @@ class RotationSampler:
     def __init__(self, angle: float) -> None:
         """
         Args:
-            angle (float): angle in radians
+            angle (float): angle in degrees
         """
         assert angle >= 0, "angle must be non-negative"
-        assert angle <= np.pi, "angle must be less than or equal pi"
-        self.angle = angle
+        assert angle <= 180, "angle must be less than or equal 180 degrees"
+        self.angle = angle / 180 * np.pi
 
     def __call__(self, n: int = 1, device: str = 'cpu'):
         """

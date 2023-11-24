@@ -26,7 +26,7 @@ class TestTranslationSampler(unittest.TestCase):
 class TestRotationSampler(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.sampler = RotationSampler(np.pi / 2)
+        self.sampler = RotationSampler(90)
         self.sampler_zero = RotationSampler(0)
 
     def test_init(self):
