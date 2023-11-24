@@ -1,5 +1,5 @@
 ---
-train_val:
+train:
     _target_: c2l.utils.augmentor.Augmentor
     custom_augmentors:
         - _target_: c2l.utils.augmentor.CustomRandomResizedCrop
@@ -23,7 +23,7 @@ train_val:
           p: 0.5
 
 
-test:
+test_val:
     _target_: c2l.utils.augmentor.Augmentor
     custom_augmentors:
         - _target_: c2l.utils.augmentor.CustomRandomCrop
