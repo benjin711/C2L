@@ -1,6 +1,6 @@
 import hydra
 from omegaconf import DictConfig
-
+from c2l.dataloaders.build_dataloaders import build_dataloaders
 from c2l.datasets.build_datasets import build_datasets, DatasetTypes
 from c2l.utils.utils import set_seeds
 
@@ -10,7 +10,8 @@ def train(cfg: DictConfig) -> None:
     if DatasetTypes.TEST.value in cfg.datasets:
         del cfg.datasets.test
 
-    datasets = build_datasets(cfg.datasets)  # pylint: disable=unused-variable
+    datasets = build_datasets(cfg.datasets)
+    dataloaders = build_dataloaders(cfg.dataloaders, datasets)  # pylint: disable=unused-variable
 
 
 def test(cfg: DictConfig) -> None:
@@ -20,7 +21,8 @@ def test(cfg: DictConfig) -> None:
     if DatasetTypes.VAL.value in cfg.datasets:
         del cfg.datasets.val
 
-    datasets = build_datasets(cfg.datasets)  # pylint: disable=unused-variable
+    datasets = build_datasets(cfg.datasets)
+    dataloaders = build_dataloaders(cfg.dataloaders, datasets)  # pylint: disable=unused-variable
 
 
 @hydra.main(version_base=None, config_path="conf", config_name="main_config")

@@ -1,7 +1,8 @@
----
 # @package _global_
+---
 defaults:
     - override /datasets: lccnet_like
+    - override /dataloaders: dl_config1
 
 # General Parameters
 general:

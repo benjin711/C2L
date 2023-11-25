@@ -1,0 +1,36 @@
+---
+batch_size: 8
+num_workers: 8
+
+train:
+  batch_size: ${..batch_size}
+  shuffle: true
+  num_workers: ${..num_workers}
+  collate_fn:
+    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _partial_: true
+  pin_memory: true
+  drop_last: true
+  persistent_workers: true
+
+val:
+  batch_size: ${..batch_size}
+  shuffle: false
+  num_workers: ${..num_workers}
+  collate_fn:
+    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _partial_: true
+  pin_memory: true
+  drop_last: false
+  persistent_workers: true
+
+test:
+  batch_size: ${..batch_size}
+  shuffle: false
+  num_workers: ${..num_workers}
+  collate_fn:
+    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _partial_: true
+  pin_memory: true
+  drop_last: false
+  persistent_workers: false

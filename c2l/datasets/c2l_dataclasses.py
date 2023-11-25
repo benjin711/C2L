@@ -24,8 +24,16 @@ class C2LDataSample:
 
 @dataclass
 class C2LDataBatch:
-    pcl: torch.Tensor
+    pcl: List[torch.Tensor]
     img: torch.Tensor
     K: torch.Tensor
     T: torch.Tensor
     metadata: Dict[str, List[Any]]
+
+    # custom memory pinning method on custom type
+    def pin_memory(self):
+        self.pcl = [pcl.pin_memory() for pcl in self.pcl]
+        self.img = self.img.pin_memory()
+        self.K = self.K.pin_memory()
+        self.T = self.T.pin_memory()
+        return self

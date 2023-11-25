@@ -1,12 +1,15 @@
 ---
 hydra:
     run:
-        dir: >
-            ${general.log_path}/
-            ${now:%Y-%m-%d}-${now:%H-%M-%S}-${general.exp_name}
+        dir: "${general.log_path}/\
+            ${now:%Y-%m-%d}-${now:%H-%M-%S}-${general.exp_name}"
+    sweep:
+        dir: "${general.log_path}/\
+            ${now:%Y-%m-%d}-${now:%H-%M-%S}-${general.exp_name}-multirun"
 
 defaults:
     - datasets: ???
+    - dataloaders: ???
     - _self_
 
 # General Parameters
