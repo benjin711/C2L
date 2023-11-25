@@ -56,7 +56,7 @@ class KittiOdometry:
                             'seq_id': seq_id,
                             'item_id': idx,
                             'cam_id': cam_id,
-                            'timestamp': timestamp,
+                            'timestamp': float(timestamp),
                             'pose': poses[idx] if seq_id < KittiOdometry.last_seq_w_poses else None
                         }
                     ))
@@ -67,11 +67,17 @@ class KittiOdometry:
     def get_sample(self, idx) -> C2LDataSample:
         sample = self.data[idx]
 
-        sample.pcl = np.fromfile(
+        pcl = np.fromfile(
             sample.pcl, dtype=np.float32).reshape(-1, 4)  # (N, 4)
-        sample.img = np.transpose(Image.open(sample.img), (2, 0, 1))  # (H, W, 3) -> (3, H, W)
+        img = np.transpose(Image.open(sample.img), (2, 0, 1))  # (H, W, 3) -> (3, H, W)
 
-        return sample
+        return C2LDataSample(
+            pcl=pcl,
+            img=img,
+            K=sample.K,
+            T=sample.T,
+            metadata=sample.metadata
+        )
 
     def _parse_calib(self, filepath: Path) -> Dict[str, np.ndarray]:
         data = {}
