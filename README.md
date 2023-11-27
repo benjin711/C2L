@@ -1,6 +1,14 @@
 # C2L
 This repository is set up to develop and evaluate ML-based camera-to-lidar (C2L) calibration methods as well as general visual localization methods.
 
+## TODO List
+- [ ] Integrate LOFTR model, a transformer based image correspondence finding network, from [LOFTR](https://zju3dv.github.io/loftr/) into the project
+- [ ] Implement reprojection error and matching confidence based loss
+- [ ] Implement optimizer instantiation from config
+- [ ] Integrate logging into project
+- [ ] Implement lightning module and instantiate from config
+- And more...
+
 ## Installation
 Conda is used to create an environment with python 3.10 and pip is used to install the required python packages.
 ```
