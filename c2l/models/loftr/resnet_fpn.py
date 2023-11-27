@@ -42,8 +42,7 @@ class BasicBlock(nn.Module):
 
 class ResNetFPN(nn.Module):
     """
-    ResNet+FPN, output resolution are 1/8 and 1/2.
-    Each block has 2 layers.
+    ResNet+FPN as in LoFTR paper
     """
 
     def __init__(self, config):
