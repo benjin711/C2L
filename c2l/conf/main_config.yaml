@@ -18,3 +18,9 @@ general:
     run_mode: ???   # train, test
     seed: ???
     log_path: ???
+
+# Logging Parameters
+logging:
+    log_level:
+        file: 10    # debug
+        stream: 10

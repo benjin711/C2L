@@ -1,8 +1,13 @@
+import logging
+
 import hydra
 from omegaconf import DictConfig
+
 from c2l.dataloaders.build_dataloaders import build_dataloaders
-from c2l.datasets.build_datasets import build_datasets, DatasetTypes
-from c2l.utils.utils import set_seeds
+from c2l.datasets.build_datasets import DatasetTypes, build_datasets
+from c2l.utils.utils import configure_logging, set_seeds
+
+logger = logging.getLogger(__name__)
 
 
 def train(cfg: DictConfig) -> None:
@@ -27,6 +32,10 @@ def test(cfg: DictConfig) -> None:
 
 @hydra.main(version_base=None, config_path="conf", config_name="main_config")
 def main(cfg: DictConfig) -> None:
+    configure_logging(cfg.logging)
+
+    logging.info(f"Experiment name: {cfg.general.exp_name}")
+    logging.info(f"Run mode: {cfg.general.run_mode}")
 
     set_seeds(cfg.general.seed)
 

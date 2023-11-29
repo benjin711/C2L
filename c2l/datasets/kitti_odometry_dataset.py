@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Dict, List
+
 import numpy as np
 from PIL import Image
+
 from c2l.datasets.c2l_dataclasses import C2LDataSample
 
 
@@ -60,6 +62,10 @@ class KittiOdometry:
                             'pose': poses[idx] if seq_id < KittiOdometry.last_seq_w_poses else None
                         }
                     ))
+
+    def __repr__(self) -> str:
+        seqs = ", ".join(map(str, self.seq_to_calib.keys()))
+        return f"KITTI Odometry Dataset\n - sequences: {seqs}\n - size: {len(self)}"
 
     def __len__(self) -> int:
         return len(self.data)  # 87104

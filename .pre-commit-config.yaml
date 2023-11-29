@@ -1,5 +1,10 @@
 ---
 repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
   - repo: local
     hooks:
       - id: autopep8
@@ -14,7 +19,7 @@ repos:
         entry: pylint
         language: system
         types: [python]
-        args: [-rn, -sn, --disable, "C0111, C0103, R0903"]
+        args: [-rn, -sn, --disable, "C0111, C0103, R0903, W1203"]
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.32.0
     hooks:
