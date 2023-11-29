@@ -5,7 +5,7 @@ This repository is set up to develop and evaluate ML-based camera-to-lidar (C2L)
 - [ ] Integrate LOFTR model, a transformer based image correspondence finding network, from [LOFTR](https://zju3dv.github.io/loftr/) into the project
 - [ ] Implement reprojection error and matching confidence based loss
 - [ ] Implement optimizer instantiation from config
-- [ ] Integrate logging into project
+- [x] Integrate logging into project
 - [ ] Implement lightning module and instantiate from config
 - And more...
 
@@ -23,7 +23,7 @@ python c2l/main.py +experiment=my_config
 ```
 
 ## Development Tools
-[pre-commit](https://pre-commit.com/) is used to run code formatting and linting before each commit. The pre-commit configuration is stored in the .pre-commit-config.yaml file. autopep8 and pylint are used for formatting and linting python files respectively. [yamllint](https://github.com/adrienverge/yamllint.git) is used for linting yaml files. To install pre-commit run the following command:
+[pre-commit](https://pre-commit.com/) is used to run code formatting and linting before each commit. The pre-commit configuration is stored in the .pre-commit-config.yaml file. autopep8, isort and pylint are used for formatting and linting python files respectively. [yamllint](https://github.com/adrienverge/yamllint.git) is used for linting yaml files. To install pre-commit run the following command:
 ```
 pre-commit install
 ```
