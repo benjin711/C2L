@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ## Experiments
 The experiments are run using the [hydra](https://hydra.cc/) framework. Experiment configurations yaml files in *c2l/conf/experiment/* overwrite the default configuration in *c2l/conf/main_config.yaml*. Experiments can be run using the following command:
 ```
-python c2l/main.py +experiment=my_config
+python c2l/main.py +experiment=example_overwrite
 ```
 
 ## Development Tools
