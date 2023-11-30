@@ -3,8 +3,8 @@ import logging
 import hydra
 from omegaconf import DictConfig
 
-from c2l.dataloaders.build_dataloaders import build_dataloaders
-from c2l.datasets.build_datasets import DatasetTypes, build_datasets
+from c2l.utils.builders import (DatasetTypes, build_dataloaders,
+                                build_datasets, build_models)
 from c2l.utils.utils import configure_logging, set_seeds
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,8 @@ def train(cfg: DictConfig) -> None:
 
     datasets = build_datasets(cfg.datasets)
     dataloaders = build_dataloaders(cfg.dataloaders, datasets)  # pylint: disable=unused-variable
+
+    models = build_models(cfg.models)  # pylint: disable=unused-variable
 
 
 def test(cfg: DictConfig) -> None:

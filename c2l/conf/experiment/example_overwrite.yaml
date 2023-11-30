@@ -3,6 +3,7 @@
 defaults:
     - override /datasets: lccnet_like
     - override /dataloaders: dl_config1
+    - override /models: loftr_base
 
 # General Parameters
 general:

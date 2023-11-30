@@ -1,7 +1,6 @@
 import unittest
 
 import torch
-from omegaconf import OmegaConf
 
 from c2l.models.loftr.resnet_fpn import ResNetFPN
 
@@ -12,16 +11,11 @@ class TestResNetFPN(unittest.TestCase):
         x = torch.randn(1, 1, 640, 480)
 
         # Test the two configs found in the LOFTR repository
-        config8_2 = OmegaConf.create({
-            'input_dim': 1, 'initial_dim': 128, 'block_dims': [128, 196, 256],
-            'num_down': 3, 'num_up': 2
-        })
-        model8_2 = ResNetFPN(config8_2)
-        config16_4 = OmegaConf.create({
-            'input_dim': 1, 'initial_dim': 128, 'block_dims': [128, 196, 256, 512],
-            'num_down': 4, 'num_up': 2
-        })
-        model16_4 = ResNetFPN(config16_4)
+        model8_2 = ResNetFPN(input_dim=1, initial_dim=128, block_dims=[128, 196, 256],
+                             num_down=2, num_up=2)
+
+        model16_4 = ResNetFPN(input_dim=1, initial_dim=128, block_dims=[128, 196, 256, 512],
+                              num_down=3, num_up=2)
 
         y8, y2 = model8_2(x)
         self.assertEqual(y8.shape, (1, 256, 80, 60))

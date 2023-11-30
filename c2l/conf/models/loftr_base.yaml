@@ -1,0 +1,13 @@
+---
+loftr:
+  _target_: c2l.models.loftr.loftr.LoFTR
+  backbone:
+    _target_: c2l.models.loftr.resnet_fpn.ResNetFPN
+    input_dim: 3
+    initial_dim: 128
+    block_dims: [128, 196, 256]
+    num_down: 2
+    num_up: 2
+  pos_encoding:
+    _target_: c2l.models.loftr.pos_encodings.PositionEncodingSine
+    dim: 256  # Has to be the same as the coarse output of the backbone

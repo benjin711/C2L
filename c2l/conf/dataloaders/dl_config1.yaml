@@ -7,7 +7,7 @@ train:
   shuffle: true
   num_workers: ${..num_workers}
   collate_fn:
-    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _target_: c2l.utils.collate.collate_c2l_data_samples
     _partial_: true
   pin_memory: true
   drop_last: true
@@ -18,7 +18,7 @@ val:
   shuffle: false
   num_workers: ${..num_workers}
   collate_fn:
-    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _target_: c2l.utils.collate.collate_c2l_data_samples
     _partial_: true
   pin_memory: true
   drop_last: false
@@ -29,7 +29,7 @@ test:
   shuffle: false
   num_workers: ${..num_workers}
   collate_fn:
-    _target_: c2l.dataloaders.collate.collate_c2l_data_samples
+    _target_: c2l.utils.collate.collate_c2l_data_samples
     _partial_: true
   pin_memory: true
   drop_last: false

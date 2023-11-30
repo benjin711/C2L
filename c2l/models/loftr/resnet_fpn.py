@@ -1,5 +1,6 @@
+from typing import List
+
 import torch.nn.functional as F
-from omegaconf import DictConfig
 from torch import nn
 
 
@@ -46,18 +47,30 @@ class ResNetFPN(nn.Module):
     ResNet+FPN as in LoFTR paper
     """
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(
+        # pylint: disable=too-many-arguments
+        self,
+        input_dim: int,
+        initial_dim: int,
+        block_dims: List[int],
+        num_down: int,
+        num_up: int
+    ):
+        """
+        Args:
+            input_dim (int): input dimension
+            initial_dim (int): initial dimension
+            block_dims (List[int]): list of dimensions for each block
+            num_down (int): number of downsampling blocks excluding the 
+                initial different downsampling block, the bottleneck is 
+                of resolution 1/(2^num_down)
+            num_up (int): number of upsampling blocks, the output is of 
+                resolution 1/(2^(num_down - num_up))
+        """
+
         super().__init__()
         # Config
         block = BasicBlock
-        input_dim = cfg.input_dim
-        initial_dim = cfg.initial_dim
-        block_dims = cfg.block_dims
-
-        # Bottleneck is of resolution 1/(2^config['num_down'])
-        num_down = cfg.num_down - 1
-        # Second output is of resolution 1/(2^(config['num_down'] - config['num_up']))
-        num_up = cfg.num_up
 
         # Initial Conv 1/1 -> 1/2
         self.init_conv = nn.Sequential(
