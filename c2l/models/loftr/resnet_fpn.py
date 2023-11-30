@@ -1,5 +1,6 @@
-from torch import nn
 import torch.nn.functional as F
+from omegaconf import DictConfig
+from torch import nn
 
 
 def conv1x1(in_planes, out_planes, stride=1):
@@ -45,21 +46,22 @@ class ResNetFPN(nn.Module):
     ResNet+FPN as in LoFTR paper
     """
 
-    def __init__(self, config):
+    def __init__(self, cfg: DictConfig):
         super().__init__()
         # Config
         block = BasicBlock
-        initial_dim = config['initial_dim']
-        block_dims = config['block_dims']
+        input_dim = cfg.input_dim
+        initial_dim = cfg.initial_dim
+        block_dims = cfg.block_dims
 
         # Bottleneck is of resolution 1/(2^config['num_down'])
-        num_down = config['num_down'] - 1
+        num_down = cfg.num_down - 1
         # Second output is of resolution 1/(2^(config['num_down'] - config['num_up']))
-        num_up = config['num_up']
+        num_up = cfg.num_up
 
         # Initial Conv 1/1 -> 1/2
         self.init_conv = nn.Sequential(
-            nn.Conv2d(1, initial_dim, kernel_size=7, stride=2, padding=3, bias=False),
+            nn.Conv2d(input_dim, initial_dim, kernel_size=7, stride=2, padding=3, bias=False),
             nn.BatchNorm2d(initial_dim),
             nn.ReLU(inplace=True),
             self._make_layer(block, initial_dim, block_dims[0], stride=1)
