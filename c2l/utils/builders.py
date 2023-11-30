@@ -1,11 +1,10 @@
 import logging
 from enum import Enum
-from typing import Dict
+from typing import Any, Dict
 
 from hydra.utils import instantiate
 from omegaconf import DictConfig
-from pyparsing import Any
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset, DataLoader
 
 from c2l.datasets.c2l_dataset_wrapper import C2LDatasetWrapper
 
@@ -16,6 +15,27 @@ class DatasetTypes(Enum):
     TRAIN = "train"
     VAL = "val"
     TEST = "test"
+
+
+def build_dataloaders(cfg: DictConfig, datasets: Dict[str, Any]) -> Dict[str, Any]:
+    """Build dataloaders from config and datasets.
+
+    Args:
+        cfg (DictConfig): Config.
+        datasets (Dict[str, Any]): Datasets.
+
+    Returns:
+        Dict[str, Any]: Dataloaders.
+    """
+    logger.info("Start building dataloaders")
+
+    dataloaders = {}
+    for dataset_type, dataset in datasets.items():
+        dataloaders[dataset_type] = instantiate(
+            cfg[dataset_type], _target_=DataLoader, dataset=dataset)
+
+    logger.info("Finished building dataloaders")
+    return dataloaders
 
 
 def build_datasets(cfg: DictConfig) -> Dict[str, Any]:
@@ -52,3 +72,22 @@ def build_datasets(cfg: DictConfig) -> Dict[str, Any]:
 
     logger.info("Finished building datasets")
     return datasets
+
+
+def build_models(cfg: DictConfig) -> Dict[str, Any]:
+    """Build models from config.
+
+    Args:
+        cfg (DictConfig): Config.
+
+    Returns:
+        Dict[str, Any]: Models.
+    """
+    logger.info("Start building models")
+
+    models = {}
+    for model_type, model_cfg in cfg.items():
+        models[model_type] = instantiate(model_cfg)
+
+    logger.info("Finished building models")
+    return models
