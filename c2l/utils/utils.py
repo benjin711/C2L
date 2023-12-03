@@ -1,11 +1,9 @@
 import logging
 import random
-import timeit
 
 import numpy as np
 import torch
 from torchvision.transforms import functional as F
-from tqdm import tqdm
 
 from c2l.utils.augmentor import IMAGENET_MEAN, IMAGENET_STD
 
@@ -64,24 +62,3 @@ def revert_imagenet_normalization(img: torch.Tensor, inplace: bool = True) -> to
     rmean = -torch.tensor(IMAGENET_MEAN) / torch.tensor(IMAGENET_STD)
     rstd = 1 / torch.tensor(IMAGENET_STD)
     return F.normalize(img, mean=rmean, std=rstd, inplace=inplace)
-
-
-def profile_dataloading_bottleneck(dataloader: torch.utils.data.DataLoader) -> None:
-    """
-    Profile dataloading time.
-
-    Args:
-        dataloader (torch.utils.data.DataLoader): Dataloader to profile
-    """
-    def _profile_dataloading():
-        # pylint: disable=unused-variable
-        for batch in tqdm(dataloader, desc="Profiling dataloading"):
-            pass
-
-    t = timeit.timeit(_profile_dataloading, number=1)
-    logger.info("Finished profiling dataloading")
-
-    num_batches = len(dataloader)
-    logger.info(f"Number of batches: {num_batches}")
-    logger.info(f"Total time: {t:.2f}s")
-    logger.info(f"Time per batch: {t / num_batches:.2f}s")
