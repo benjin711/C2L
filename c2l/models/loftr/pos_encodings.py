@@ -6,7 +6,10 @@ from torch import nn
 
 class PositionEncodingSine(nn.Module):
     """
-    This is a sinusoidal position encoding that generalizes to 2-dimensional images
+    This is a sinusoidal position encoding that generalizes to 2-dimensional images.
+    First proposed by "End-to-End Object Detection with Transformers". This is a 
+    modified version taken from the LoFTR implementation.
+    https://github.com/zju3dv/LoFTR/blob/master/src/loftr/utils/position_encoding.py
     """
 
     def __init__(self, dim: int, max_shape: Tuple[int, int] = (256, 256)):
