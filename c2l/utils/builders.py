@@ -87,7 +87,8 @@ def build_models(cfg: DictConfig) -> Dict[str, Any]:
 
     models = {}
     for model_type, model_cfg in cfg.items():
-        models[model_type] = instantiate(model_cfg)
+        if hasattr(model_cfg, "_target_"):
+            models[model_type] = instantiate(model_cfg)
 
     logger.info("Finished building models")
     return models
