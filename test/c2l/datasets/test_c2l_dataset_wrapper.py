@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import numpy as np
 import torch
-from c2l.datasets.c2l_dataset_wrapper import C2LDatasetWrapper
+
 from c2l.datasets.c2l_dataclasses import C2LDataSample
+from c2l.datasets.c2l_dataset_wrapper import C2LDatasetWrapper
 
 
 class TestC2LDatasetWrapper(unittest.TestCase):

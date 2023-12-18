@@ -3,8 +3,9 @@ import unittest
 import numpy as np
 import torch
 
-from c2l.utils.transformation_sampler import \
-    TranslationSampler, RotationSampler, TransformationSampler
+from c2l.utils.transformation_sampler import (RotationSampler,
+                                              TransformationSampler,
+                                              TranslationSampler)
 
 
 class TestTranslationSampler(unittest.TestCase):

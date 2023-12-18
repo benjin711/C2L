@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
+
 import numpy as np
+
 from c2l.datasets.kitti_odometry_dataset import KittiOdometry
 
 
@@ -66,7 +68,7 @@ class TestKittiOdometryDataset(unittest.TestCase):
         self.assertIsInstance(sample.metadata['seq_id'], int)
         self.assertIsInstance(sample.metadata['item_id'], int)
         self.assertIsInstance(sample.metadata['cam_id'], int)
-        self.assertIsInstance(sample.metadata['timestamp'], str)
+        self.assertIsInstance(sample.metadata['timestamp'], float)
         self.assertIsInstance(sample.metadata['pose'], np.ndarray)
         self.assertEqual(sample.metadata['pose'].shape, (4, 4))
 
@@ -89,6 +91,6 @@ class TestKittiOdometryDataset(unittest.TestCase):
         self.assertIsInstance(sample.metadata['seq_id'], int)
         self.assertIsInstance(sample.metadata['item_id'], int)
         self.assertIsInstance(sample.metadata['cam_id'], int)
-        self.assertIsInstance(sample.metadata['timestamp'], str)
+        self.assertIsInstance(sample.metadata['timestamp'], float)
         self.assertIsInstance(sample.metadata['pose'], np.ndarray)
         self.assertEqual(sample.metadata['pose'].shape, (4, 4))

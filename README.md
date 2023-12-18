@@ -23,11 +23,15 @@ python c2l/main.py +experiment=example_overwrite
 ```
 
 ## Development Tools
-[pre-commit](https://pre-commit.com/) is used to run code formatting and linting before each commit. The pre-commit configuration is stored in the .pre-commit-config.yaml file. autopep8, isort and pylint are used for formatting and linting python files respectively. [yamllint](https://github.com/adrienverge/yamllint.git) is used for linting yaml files. To install pre-commit run the following command:
+[pre-commit](https://pre-commit.com/) is used to run code formatting and linting before each commit. The pre-commit configuration is stored in the .pre-commit-config.yaml file. autopep8, isort and pylint are used for formatting and linting python files respectively. [yamllint](https://github.com/adrienverge/yamllint.git) is used for linting yaml files. To install pre-commit (initially or after having changed the *.pre-commit-config.yaml*) run the following command:
 ```
 pre-commit install
 ```
 In order for pylint to find project level imports, the project root directory must be added to the python path. This can be done by e.g. adding the following line to the .bashrc file:
 ```
 export PYTHONPATH="${PYTHONPATH}:/path/to/project/root"
+```
+The unittest framework is used for unit testing. The tests are located in the *test/* directory. The tests can be run using the following command:
+```
+python -m unittest
 ```

@@ -1,13 +1,14 @@
-from typing import Tuple
 import unittest
+from typing import Tuple
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from torchvision.transforms import v2
 
-from c2l.utils.augmentor import CustomRandomCrop, CustomRandomHorizontalFlip, \
-    CustomRandomResizedCrop, CustomRandomRotation, CustomRandomVerticalFlip, \
-    Augmentor
+from c2l.utils.augmentor import (Augmentor, CustomRandomCrop,
+                                 CustomRandomHorizontalFlip,
+                                 CustomRandomResizedCrop, CustomRandomRotation,
+                                 CustomRandomVerticalFlip)
 
 
 def get_dummy_data(H: int, W: int, num: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:

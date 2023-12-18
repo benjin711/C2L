@@ -20,6 +20,14 @@ repos:
         language: system
         types: [python]
         args: [-rn, -sn, --disable, "C0111, C0103, R0903, W1203"]
+      - id: unittest
+        name: unittest
+        entry: python -m unittest discover
+        language: python
+        'types': [python]
+        args: ["-p '*test.py'"]
+        additional_dependencies: []
+        pass_filenames: false
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.32.0
     hooks:
