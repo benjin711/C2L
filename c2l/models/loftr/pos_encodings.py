@@ -15,18 +15,20 @@ class PositionEncodingSine(nn.Module):
     def __init__(self, dim: int, max_shape: Tuple[int, int] = (256, 256)):
         """
         Args:
+            dim (int): the number of channels of the input feature map
             max_shape (tuple): for 1/8 featmap, the max length of 256 corresponds to 2048 pixels
         """
         super().__init__()
 
-        temp = torch.tensor(10000.0)  # As in the end-to-end detection transformer paper
+        temperature = torch.tensor(10000.0)  # As in the end-to-end detection transformer paper
 
         pos_encoding = torch.zeros((dim, *max_shape))
 
         y_position = torch.ones(max_shape).cumsum(0).float().unsqueeze(0)
         x_position = torch.ones(max_shape).cumsum(1).float().unsqueeze(0)
 
-        div_term = torch.pow(temp, torch.arange(0, dim//2, 2, dtype=torch.float32) / (dim//2))
+        div_term = torch.pow(temperature, torch.arange(
+            0, dim//2, 2, dtype=torch.float32) / (dim//2))
         div_term = div_term[:, None, None]  # [C//4, 1, 1]
 
         pos_encoding[0::4, :, :] = torch.sin(x_position / div_term)
