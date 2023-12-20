@@ -2,7 +2,7 @@
 feat_dim: 256
 
 loftr:
-  _target_: c2l.models.loftr.loftr_model.LoFTR
+  _target_: c2l.models.loftr.visloc1.VisLoc1
   img_backbone:
     _target_: c2l.models.loftr.resnet_fpn.ResNetFPN
     input_dim: 3
@@ -22,6 +22,20 @@ loftr:
     _target_: c2l.models.loftr.pos_encodings.PositionEncodingSine
     dim: ${...feat_dim}
   loftr_coarse:
+    _target_: c2l.models.loftr.loftr.LocalFeatureTransformer
     dim: ${...feat_dim}
     nhead: 8
     nlayers: 6
+  transf_decoder:
+    _target_: c2l.models.loftr.transf_decoder.TransformationDecoder
+    dim: ${...feat_dim}
+    nhead: 8
+    nlayers: 3
+    head_trans:
+      _target_: torch.nn.Linear
+      in_features: ${....feat_dim}
+      out_features: 6
+    head_rot:
+      _target_: torch.nn.Linear
+      in_features: ${....feat_dim}
+      out_features: 5
