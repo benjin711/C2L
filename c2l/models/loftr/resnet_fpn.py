@@ -1,7 +1,10 @@
-from typing import List
+from typing import List, Tuple
 
+import torch
 import torch.nn.functional as F
 from torch import nn
+
+from c2l.models.loftr.visloc1 import FeatureWithMask
 
 
 def conv1x1(in_planes, out_planes, stride=1):
@@ -118,24 +121,54 @@ class ResNetFPN(nn.Module):
         layer2 = block(out_c, out_c, stride=1)
         return nn.Sequential(layer1, layer2)
 
-    def forward(self, x):
-        x = self.init_conv(x)
+    def _create_feature(self, x: torch.Tensor, x_mask: torch.Tensor) -> FeatureWithMask:
+        """
+        Args:
+            x (torch.Tensor): feature tensor [N, C, H', W']
+            x_mask (torch.Tensor): feature mask [N, H, W]
+        Returns:
+            out (FeatureWithMask): [N, C, H', W'], [N, H', W'] feature tensor and resized mask
+        """
+        if x_mask is not None:
+            x_mask = x_mask.to(dtype=torch.uint8)
+            x_mask = F.interpolate(x_mask[:, None, :, :], size=x.shape[-2:], mode='nearest')
+            x_mask = x_mask.squeeze(1).to(dtype=torch.bool)
+
+        return FeatureWithMask(
+            feat=x,
+            mask=x_mask,
+        )
+
+    def forward(
+        self,
+        img: FeatureWithMask,
+    ) -> List[Tuple[torch.Tensor, torch.Tensor]]:
+        """
+        Args:
+            img (FeatureWithMask): image feature with mask [N, C, H, W]
+        Returns:
+            out (List[FeatureWithMask]): list of features with their masks
+                at different resolutions
+        """
+        feat, mask = img.feat, img.mask
+        feat = self.init_conv(feat)
         prop_out = []
 
         offset = len(self.down) - len(self.up)
         for i, down in enumerate(self.down):
             if i >= offset:
-                prop_out.append(self.propagate[i - offset](x))
+                prop_out.append(self.propagate[i - offset](feat))
 
-            x = down(x)
+            feat = down(feat)
 
-        x = self.bottleneck(x)
-        out = [x]
+        feat = self.bottleneck(feat)
+        out = [self._create_feature(feat, mask)]
+
         prop_out.reverse()
 
         for i, up in enumerate(self.up):
-            x = F.interpolate(x, scale_factor=2., mode='bilinear', align_corners=True)
-            x = up(x + prop_out[i])
+            feat = F.interpolate(feat, scale_factor=2., mode='bilinear', align_corners=True)
+            feat = up(feat + prop_out[i])
 
-        out.append(x)
+        out.append(self._create_feature(feat, mask))
         return out

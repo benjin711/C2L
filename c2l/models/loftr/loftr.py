@@ -1,7 +1,7 @@
-import torch
 from torch import nn
 
 from c2l.models.loftr.encoder_layer import LoFTREncoderLayer
+from c2l.models.loftr.visloc1 import FeatureWithMask
 
 
 class LocalFeatureTransformer(nn.Module):
@@ -34,24 +34,23 @@ class LocalFeatureTransformer(nn.Module):
 
     def forward(
         self,
-        feat_img: torch.Tensor,
-        feat_pcl: torch.Tensor,
-        mask_img: torch.Tensor = None,
-        mask_pcl: torch.Tensor = None
+        feat_img: FeatureWithMask,
+        feat_pcl: FeatureWithMask,
     ):
         """
         Args:
-            feat_img (torch.Tensor): [N, L, C]
-            feat_pcl (torch.Tensor): [N, S, C]
-            mask_img (torch.Tensor): [N, L] (optional)
-            mask_pcl (torch.Tensor): [N, S] (optional)
+            feat_img (FeatureWithMask): image feature [N, L, C] with mask (optional) [N, L]
+            feat_pcl (FeatureWithMask): point cloud feature [N, S, C] with mask (optional) [N, S]
 
         Returns:
-            feat_img (torch.Tensor): [N, L, C]
-            feat_pcl (torch.Tensor): [N, S, C]
+            feat_img (FeatureWithMask): image feature [N, L, C] with mask (optional) [N, L]
+            feat_pcl (FeatureWithMask): point cloud feature [N, S, C] with mask (optional) [N, S]
         """
         next_layer_type = {'self': 'cross', 'cross': 'self'}
         layer_type = 'self'
+
+        mask_img, feat_img = feat_img.mask, feat_img.feat
+        mask_pcl, feat_pcl = feat_pcl.mask, feat_pcl.feat
 
         for img_layer, pcl_layer in zip(self.layers['img'], self.layers['pcl']):
 
@@ -68,4 +67,7 @@ class LocalFeatureTransformer(nn.Module):
 
             layer_type = next_layer_type[layer_type]
 
-        return feat_img, feat_pcl
+        return (
+            FeatureWithMask(feat=feat_img, mask=mask_img),
+            FeatureWithMask(feat=feat_pcl, mask=mask_pcl)
+        )

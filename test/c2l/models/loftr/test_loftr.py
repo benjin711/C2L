@@ -3,6 +3,7 @@ import unittest
 import torch
 
 from c2l.models.loftr.loftr import LocalFeatureTransformer
+from c2l.models.loftr.visloc1 import FeatureWithMask
 
 
 class TestLocalFeatureTransformer(unittest.TestCase):
@@ -16,18 +17,22 @@ class TestLocalFeatureTransformer(unittest.TestCase):
         self.seq_len_img = 10
         self.seq_len_pcl = 8
 
-    def generate_random_tensors(self):
-        feat_img = torch.randn(self.batch_size, self.seq_len_img, self.dim)
-        feat_pcl = torch.randn(self.batch_size, self.seq_len_pcl, self.dim)
+    def generate_random_input(self):
+        feat_img = FeatureWithMask(
+            feat=torch.randn(self.batch_size, self.seq_len_img, self.dim),
+            mask=torch.randint(0, 2, (self.batch_size, self.seq_len_img)).float()
+        )
+        feat_pcl = FeatureWithMask(
+            feat=torch.randn(self.batch_size, self.seq_len_pcl, self.dim),
+            mask=torch.randint(0, 2, (self.batch_size, self.seq_len_pcl)).float()
+        )
         return feat_img, feat_pcl
 
     def test_forward_pass(self):
-        feat_img, feat_pcl = self.generate_random_tensors()
-        mask_img = torch.randint(0, 2, (self.batch_size, self.seq_len_img)).float()
-        mask_pcl = torch.randint(0, 2, (self.batch_size, self.seq_len_pcl)).float()
+        feat_img, feat_pcl = self.generate_random_input()
 
-        out_feat_img, out_feat_pcl = self.transformer(feat_img, feat_pcl, mask_img, mask_pcl)
+        out_feat_img, out_feat_pcl = self.transformer(feat_img, feat_pcl)
 
         # Check output shapes
-        self.assertEqual(out_feat_img.shape, (self.batch_size, self.seq_len_img, self.dim))
-        self.assertEqual(out_feat_pcl.shape, (self.batch_size, self.seq_len_pcl, self.dim))
+        self.assertEqual(out_feat_img.feat.shape, (self.batch_size, self.seq_len_img, self.dim))
+        self.assertEqual(out_feat_pcl.feat.shape, (self.batch_size, self.seq_len_pcl, self.dim))

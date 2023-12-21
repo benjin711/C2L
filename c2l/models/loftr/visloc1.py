@@ -1,7 +1,15 @@
+from dataclasses import dataclass
 from typing import Dict
 
+import torch
 from einops.einops import rearrange
 from torch import nn
+
+
+@dataclass
+class FeatureWithMask:
+    feat: torch.Tensor
+    mask: torch.Tensor
 
 
 class VisLoc1(nn.Module):
@@ -48,28 +56,32 @@ class VisLoc1(nn.Module):
             'pcl_shape': data['pcl'].shape[1:],
         })
 
-        img = data['img']
-        img_mask = data['mask_img'] if 'mask_img' in data else None
+        img = FeatureWithMask(
+            feat=data['img'],
+            mask=data['mask_img'] if 'mask_img' in data else None,
+        )
 
-        (cfeat_img, cfeat_img_mask), _ = self.img_backbone(img, img_mask)  # [N, C, H, W]
-        cfeat_img = rearrange(self.pos_encoding(cfeat_img), 'n c h w -> n (h w) c')  # [N, L, C]
-        cfeat_img_mask = rearrange(cfeat_img_mask, 'n h w -> n (h w)')
+        cfeat_img, _ = self.img_backbone(img)  # [N, C, H, W]
+        cfeat_img.img = rearrange(self.pos_encoding(cfeat_img.feat),
+                                  'n c h w -> n (h w) c')  # [N, L, C]
+        cfeat_img.mask = rearrange(cfeat_img.mask, 'n h w -> n (h w)')
 
-        pcl = data['pcl']
-        pcl_mask = data['mask_pcl'] if 'mask_pcl' in data else None
-        feat_pcl, feat_pcl_mask = self.pcl_backbone(pcl, pcl_mask)  # [N, S, C]
+        pcl = FeatureWithMask(
+            feat=data['pcl'],
+            mask=data['mask_pcl'] if 'mask_pcl' in data else None,
+        )
+        feat_pcl = self.pcl_backbone(pcl)  # [N, S, C]
 
         # 2. LoFTR Coarse
-        cfeat_img, feat_pcl = self.loftr_coarse(cfeat_img, feat_pcl, cfeat_img_mask, feat_pcl_mask)
+        cfeat_img, feat_pcl = self.loftr_coarse(cfeat_img, feat_pcl)
 
         # 3. Transformation Decoder
-        trans, trans_unc, rot, rot_unc = self.transf_decoder(
-            cfeat_img, feat_pcl, cfeat_img_mask, feat_pcl_mask)
+        twu = self.transf_decoder(cfeat_img, feat_pcl)
         data.update({
-            "trans": trans,
-            "trans_unc": trans_unc,
-            "rot": rot,
-            "rot_unc": rot_unc,
+            "trans": twu.trans,
+            "trans_unc": twu.trans_unc,
+            "rot": twu.rot,
+            "rot_unc": twu.rot_unc,
         })
 
         return data
