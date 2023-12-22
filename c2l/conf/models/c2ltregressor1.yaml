@@ -1,7 +1,7 @@
 ---
 feat_dim: 256
 
-loftr:
+c2ltregressor1:
   _target_: c2l.models.loftr.c2ltregressor1.C2LTRegressor1
   img_backbone:
     _target_: c2l.models.loftr.resnet_fpn.ResNetFPN

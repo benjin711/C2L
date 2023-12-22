@@ -58,7 +58,8 @@ class C2LTRegressor1(nn.Module):
         coarse_img, _ = self.img_backbone(img)  # [N, C, H, W]
         coarse_img.feat = rearrange(self.pos_encoding(coarse_img.feat),
                                     'n c h w -> n (h w) c')  # [N, L, C]
-        coarse_img.mask = rearrange(coarse_img.mask, 'n h w -> n (h w)')
+        if coarse_img.mask is not None:
+            coarse_img.mask = rearrange(coarse_img.mask, 'n h w -> n (h w)')
 
         pcl = FeatureWithMask(
             feat=data['pcl'],

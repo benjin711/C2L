@@ -27,7 +27,10 @@ class SimplePCLEncoder(nn.Module):
         Returns:
             FeatureWithMask: encoded point cloud with mask
         """
+        pcl_feat = pcl.feat.permute(0, 2, 1).unsqueeze(-1)
+        pcl_feat = self.conv2d(pcl_feat)
+        pcl_feat = pcl_feat.squeeze(-1).permute(0, 2, 1)
         return FeatureWithMask(
-            feat=self.conv2d(pcl.feat),
+            feat=pcl_feat,
             mask=pcl.mask,
         )
