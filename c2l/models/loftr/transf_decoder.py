@@ -3,8 +3,8 @@ from dataclasses import dataclass
 import torch
 from torch import nn
 
+from c2l.models.loftr.c2ltregressor1 import FeatureWithMask
 from c2l.models.loftr.encoder_layer import LoFTREncoderLayer
-from c2l.models.loftr.visloc1 import FeatureWithMask
 
 
 @dataclass

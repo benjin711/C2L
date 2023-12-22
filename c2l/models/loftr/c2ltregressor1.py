@@ -12,7 +12,7 @@ class FeatureWithMask:
     mask: torch.Tensor
 
 
-class VisLoc1(nn.Module):
+class C2LTRegressor1(nn.Module):
 
     def __init__(
         # pylint: disable=too-many-arguments
@@ -50,33 +50,27 @@ class VisLoc1(nn.Module):
             }
         """
         # 1. Backbones
-        data.update({
-            'bs': data['img'].size(0),
-            'img_shape': data['img'].shape[1:],
-            'pcl_shape': data['pcl'].shape[1:],
-        })
-
         img = FeatureWithMask(
             feat=data['img'],
             mask=data['mask_img'] if 'mask_img' in data else None,
         )
 
-        cfeat_img, _ = self.img_backbone(img)  # [N, C, H, W]
-        cfeat_img.img = rearrange(self.pos_encoding(cfeat_img.feat),
-                                  'n c h w -> n (h w) c')  # [N, L, C]
-        cfeat_img.mask = rearrange(cfeat_img.mask, 'n h w -> n (h w)')
+        coarse_img, _ = self.img_backbone(img)  # [N, C, H, W]
+        coarse_img.feat = rearrange(self.pos_encoding(coarse_img.feat),
+                                    'n c h w -> n (h w) c')  # [N, L, C]
+        coarse_img.mask = rearrange(coarse_img.mask, 'n h w -> n (h w)')
 
         pcl = FeatureWithMask(
             feat=data['pcl'],
             mask=data['mask_pcl'] if 'mask_pcl' in data else None,
         )
-        feat_pcl = self.pcl_backbone(pcl)  # [N, S, C]
+        pcl = self.pcl_backbone(pcl)  # [N, S, C]
 
         # 2. LoFTR Coarse
-        cfeat_img, feat_pcl = self.loftr_coarse(cfeat_img, feat_pcl)
+        coarse_img, pcl = self.loftr_coarse(coarse_img, pcl)
 
         # 3. Transformation Decoder
-        twu = self.transf_decoder(cfeat_img, feat_pcl)
+        twu = self.transf_decoder(coarse_img, pcl)
         data.update({
             "trans": twu.trans,
             "trans_unc": twu.trans_unc,

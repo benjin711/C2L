@@ -2,8 +2,8 @@ import unittest
 
 import torch
 
+from c2l.models.loftr.c2ltregressor1 import FeatureWithMask
 from c2l.models.loftr.resnet_fpn import ResNetFPN
-from c2l.models.loftr.visloc1 import FeatureWithMask
 
 
 class TestResNetFPN(unittest.TestCase):

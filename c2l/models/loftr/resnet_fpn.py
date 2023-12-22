@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from c2l.models.loftr.visloc1 import FeatureWithMask
+from c2l.models.loftr.c2ltregressor1 import FeatureWithMask
 
 
 def conv1x1(in_planes, out_planes, stride=1):
